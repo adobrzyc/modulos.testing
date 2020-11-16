@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include=".Fixtures\AutofacExtensions.cs" />
+    <Compile Include=".Fixtures\Blocks\DropAndCreateDb.cs" />
+    <Compile Include=".Fixtures\Blocks\InitializeIoc.cs" />
+    <Compile Include=".Fixtures\EnvironmentsExtensions.cs" />
+    <Compile Include=".Fixtures\Environments\SqlServerEnv.cs" />
+    <Compile Include=".Versions\V2\Collections.cs" />
+    <Compile Include=".Versions\V2\Model\Definition.cs" />
+    <Compile Include=".Versions\V2\Model\Departments.cs" />
+    <Compile Include=".Versions\V2\Model\Organizations.cs" />
+    <Compile Include=".Versions\V2\Model\RegularUsers.cs" />
+    <Compile Include=".Fixtures\Environments\SqLiteEnv.cs" />
+    <Compile Include=".Fixtures\Wrappers\BeginRollbackTran.cs" />
+    <Compile Include=".Versions\V1\Model\Administrators.cs" />
+    <Compile Include=".Versions\V1\Collections.cs" />
+    <Compile Include=".Versions\V1\Model\Definition.cs" />
+    <Compile Include=".Versions\V1\Model\Departments.cs" />
+    <Compile Include=".Versions\V1\Model\RegularUsers.cs" />
+    <Compile Include=".Versions\V1\Scripts\AddALotOfUsersUsingSql.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="1.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Modulos.Testing.EF\Modulos.Testing.EF.csproj" />
+    <ProjectReference Include="..\SimpleDomain\SimpleDomain.csproj" />
+  </ItemGroup>
+
+</Project>
