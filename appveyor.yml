@@ -2,14 +2,31 @@
   branches:
    only:
    - master
-  version: 1.0.{build}
-  pull_requests:
-    do_not_increment_build_number: true
-  nuget:
-    disable_publish_on_pr: true
-  build_script:
+
+version: '0.1.0.{build}'
+
+dotnet_csproj:
+  version_prefix: '0.1.0'
+  patch: true
+  file: 'src\**\*.csproj'
+
+configuration: Release
+
+skip_tags: true
+
+clone_depth: 1
+
+test: off
+
+build_script:
   - ps: .\build.ps1
-  test: off
-  artifacts:
+
+pull_requests:
+  do_not_increment_build_number: true
+
+nuget:
+  disable_publish_on_pr: true
+
+artifacts:
   - path: .\artifacts\*.nupkg
     name: NuGet
