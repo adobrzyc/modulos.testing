@@ -25,5 +25,5 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Create the package
-      run: dotnet pack --configuration Release src/Modulos.Testing/Modulos.Testing.csproj
+      run: dotnet pack --configuration Release 'src/Modulos.Testing/Modulos.Testing.csproj'
       
