@@ -26,5 +26,9 @@ function Exec
 exec { & dotnet restore }
 
 exec { & dotnet build  .\src\Modulos.Testing\Modulos.Testing.csproj -c Release}
+exec { & dotnet build  .\src\Modulos.Testing.Db\Modulos.Testing.Db.csproj -c Release}
+exec { & dotnet build  .\src\Modulos.Testing.EF\Modulos.Testing.EF.csproj -c Release}
 
 exec { & dotnet pack .\src\Modulos.Testing\Modulos.Testing.csproj -c Release -o .\artifacts }
+exec { & dotnet pack .\src\Modulos.Testing.Db\Modulos.Testing.Db.csproj -c Release -o .\artifacts }
+exec { & dotnet pack .\src\Modulos.Testing.EF\Modulos.Testing.EF.csproj -c Release -o .\artifacts }
