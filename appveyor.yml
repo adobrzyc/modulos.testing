@@ -32,7 +32,6 @@ artifacts:
 
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/autofac/api/v2/package
   api_key:
     secure: JSqGLy0Lt9FkZHBfucPd7MmOi/FpogM4nv529p+X0XCtsBa+5ulAOvUNt9F+gUfy
-skip_symbols: true
+  skip_symbols: true
