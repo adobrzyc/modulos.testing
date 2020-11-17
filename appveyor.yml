@@ -1,7 +1,6 @@
--
-  branches:
-   only:
-   - master
+branches:
+  only:
+  - master
 
 version: '0.1.0.{build}'
 
