@@ -18,12 +18,12 @@ namespace Modulos.Testing
         /// </summary>
         public Func<IServiceProvider, IServiceScope> CreateScope;
 
-        public void Wrap<T>() where T : ITestWrapper
+        public TestOptions Wrap<T>() where T : ITestWrapper
         {
-            Wrap(typeof(T));
+            return Wrap(typeof(T));
         }
 
-        public void Wrap(Type wrapper)
+        public TestOptions Wrap(Type wrapper)
         {
             if (wrapper == null) throw new ArgumentNullException(nameof(wrapper));
 
@@ -31,6 +31,7 @@ namespace Modulos.Testing
                 throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
 
             wrappers.Enqueue(wrapper);
+            return this;
         }
 
         public IEnumerable<Type> GetWrappers()
