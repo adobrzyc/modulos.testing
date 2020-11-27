@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace Modulos.Testing
 {
-    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class Test : ITest
     {
         private readonly TestOptions options;
@@ -32,7 +31,7 @@ namespace Modulos.Testing
             return ServiceProvider.GetService(serviceType);
         }
 
-        public async Task BeginWrappers()
+        async Task ITest.BeginWrappers()
         {
             foreach (var wrapperType in options.GetWrappers())
             {
@@ -42,7 +41,7 @@ namespace Modulos.Testing
             }
         }
 
-        public async Task FinishWrappers()
+        async Task ITest.FinishWrappers()
         {
             var exceptions = new List<Exception>();
           
@@ -82,13 +81,13 @@ namespace Modulos.Testing
             if (disposing)
             {
                 scope?.Dispose();
-                FinishWrappers().Wait();
+                ((ITest)this).FinishWrappers().Wait();
             }
         }
 
         protected virtual async ValueTask DisposeAsyncCore()
         {
-            await FinishWrappers().ConfigureAwait(false);
+            await ((ITest)this).FinishWrappers().ConfigureAwait(false);
 
             if (scope is IAsyncDisposable disposable)
             {
@@ -123,6 +122,5 @@ namespace Modulos.Testing
 
             return (ITestWrapper)Activator.CreateInstance(typeToResolve, parameters.ToArray());
         }
-
     }
 }
