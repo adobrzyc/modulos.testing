@@ -2,17 +2,17 @@ branches:
   only:
   - master
 
-version: '0.1.1.{build}'
+version: '0.1.2.{build}'
 
 dotnet_csproj:
-  version_prefix: '0.1.1'
+  version_prefix: '0.1.2'
   patch: true
   file: 'src\**\*.csproj'
 
 configuration: Release
 
 skip_tags: true
-
+  
 clone_depth: 1
 
 test: off

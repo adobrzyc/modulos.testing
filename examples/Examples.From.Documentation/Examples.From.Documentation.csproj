@@ -16,6 +16,7 @@
     <Compile Include="Basics\.Fixtures\Environments\CustomEnvironmentCollection.cs" />
     <Compile Include="Basics\.Fixtures\Environments\CustomEnvironment.cs" />
     <Compile Include="Basics\.Fixtures\Environments\DefaultEnvironment.cs" />
+    <Compile Include="Basics\.Fixtures\Wrappers\EmptyTestWrapper.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Modulos.Testing.EF\Modulos.Testing.EF.csproj" />
+    <ProjectReference Include="..\..\src\Modulos.Testing\Modulos.Testing.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,7 +7,7 @@ namespace Modulos.Testing
     {
         public static T Resolve<T>(this ITest test)
         {
-            return test.ServiceProvider.GetRequiredService<T>();
+            return test.GetRequiredService<T>();
         }
     }
 }

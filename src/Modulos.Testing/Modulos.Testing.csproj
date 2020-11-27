@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <PackageTags>modulos;testing;integration tests;unit testing;functional tests;</PackageTags>
-    <Description>Allows creating reconfigurable test environments for unit, functional, and integration tests.</Description>
+    <Description>Modulos.Testing is a simple library built to improve integration and unit testing. It also brings a bunch of battled proven patterns for better efficiency during testing process.</Description>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
