@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable UnusedType.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Modulos.Testing
@@ -15,10 +19,10 @@ namespace Modulos.Testing
     {
         private readonly object locker = new object();
 
-        private readonly List<IBlockRegistration> registrations = new List<IBlockRegistration>();
-        private readonly List<Type> wrappers = new List<Type>();
-        private readonly ConcurrentBag<object> disposables = new ConcurrentBag<object>();
-        private readonly ConcurrentBag<IBlock> blocks = new ConcurrentBag<IBlock>();
+        internal readonly List<IBlockRegistration> registrations = new List<IBlockRegistration>();
+        internal readonly List<Type> wrappers = new List<Type>();
+        internal readonly ConcurrentBag<object> disposables = new ConcurrentBag<object>();
+        internal readonly ConcurrentBag<IBlock> blocks = new ConcurrentBag<IBlock>();
         private IServiceProvider serviceProvider;
         private bool isBuilt;
         private bool IsBuilt
@@ -85,7 +89,6 @@ namespace Modulos.Testing
         }
 
 
-        
         public IServiceProvider GetServiceProvider()
         {
             lock (locker)
@@ -101,6 +104,7 @@ namespace Modulos.Testing
                 serviceProvider = provider;
             }
         }
+
 
         /// <summary>
         /// Creates test class inherited from <see cref="ITest"/> and build test environment if not already built. 
@@ -179,6 +183,7 @@ namespace Modulos.Testing
             return CreateTest<Test>(optionsModifier);
         }
 
+
         public void AddDisposableElement(IDisposable disposable)
         {
             disposables.Add(disposable);
@@ -224,12 +229,12 @@ namespace Modulos.Testing
 
  
 
-        public void Wrap<T>() where T : ITestWrapper
+        public ITestEnvironment Wrap<T>() where T : ITestWrapper
         {
-            Wrap(typeof(T));
+            return Wrap(typeof(T));
         }
 
-        public void Wrap(Type wrapper)
+        public ITestEnvironment Wrap(Type wrapper)
         {
             if (wrapper == null) throw new ArgumentNullException(nameof(wrapper));
 
@@ -237,13 +242,14 @@ namespace Modulos.Testing
                 throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
 
             wrappers.Add(wrapper);
+
+            return this;
         }
 
 
-        public ITestEnvironment Add<TBlock>(string mark, Action<TBlock, ITestEnvironment> setup)
+        internal ITestEnvironment AddInternal<TBlock>(string mark, Action<TBlock, ITestEnvironment> setup)
             where TBlock : IBlock
         {
-
             ThrowIfAlreadyBuildException();
 
             var registration = new BlockRegistration<TBlock>(mark, setup);
@@ -252,50 +258,284 @@ namespace Modulos.Testing
             return this;
         }
 
+        public ITestEnvironment Add<TBlock>(string mark, Action<TBlock, ITestEnvironment> setup)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            return AddInternal(mark, setup);
+        }
+
+        public ITestEnvironment Add<TBlock>(string mark, Action<TBlock> setup)
+            where TBlock : IBlock
+        {  
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return AddInternal(mark, wrappedSetup);
+        }
+
         public ITestEnvironment Add<TBlock>(Action<TBlock, ITestEnvironment> setup)
             where TBlock : IBlock
         {
-            return Add(null, setup);
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+            return AddInternal(null, setup);
         }
 
-        public ITestEnvironment Add<TBlock>(string mark) 
+        public ITestEnvironment Add<TBlock>(Action<TBlock> setup)
             where TBlock : IBlock
         {
-            return Add<TBlock>(mark, null);
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return AddInternal(null, wrappedSetup);
+        }
+
+        public ITestEnvironment Add<TBlock>(string mark)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            return AddInternal<TBlock>(mark, null);
         }
 
         public ITestEnvironment Add<TBlock>() where TBlock : IBlock
         {
-            return Add<TBlock>(null, null);
+            return AddInternal<TBlock>(null, null);
         }
 
 
-
-        public ITestEnvironment Update<TBlock>(Action<TBlock, ITestEnvironment, PreviousBlockSetupDelegate<TBlock>> setup)
-            where TBlock : IBlock
-        {
-            if (setup == null) throw new ArgumentNullException(nameof(setup));
-            return Update(null, setup);
-        }
-
-        public ITestEnvironment Update<TBlock>(string mark, Action<TBlock, ITestEnvironment, PreviousBlockSetupDelegate<TBlock>> setup)
+        internal ITestEnvironment InsertAtInternal<TBlock>(int index, string mark, Action<TBlock, ITestEnvironment> setup)
             where TBlock : IBlock
         {
             ThrowIfAlreadyBuildException();
 
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index > registrations.Count) throw new ArgumentOutOfRangeException(nameof(index));
+
+            var registration = new BlockRegistration<TBlock>(mark, setup);
+            ThrowIfAlreadyExists(registration);
+            registrations.Insert(index, registration);
+            return this;
+        }
+      
+        public ITestEnvironment InsertAt<TBlock>(int index, string mark, Action<TBlock, ITestEnvironment> setup) 
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            return InsertAtInternal(index, mark, setup);
+        }
+
+        public ITestEnvironment InsertAt<TBlock>(int index, string mark, Action<TBlock> setup)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return InsertAtInternal(index, mark, wrappedSetup);
+        }
+
+        public ITestEnvironment InsertAt<TBlock>(int index, string mark)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+
+            return InsertAtInternal<TBlock>(index, mark, null);
+        }
+
+        public ITestEnvironment InsertAt<TBlock>(int index, Action<TBlock, ITestEnvironment> setup)
+            where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+           
+            return InsertAtInternal(index, null, setup);
+        }
+
+        public ITestEnvironment InsertAt<TBlock>(int index, Action<TBlock> setup)
+            where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return InsertAtInternal(index, null, wrappedSetup);
+        }
+
+        public ITestEnvironment InsertAt<TBlock>(int index)
+            where TBlock : IBlock
+        {
+            return InsertAtInternal<TBlock>(index, null, null);
+        }
+
+  
+        internal ITestEnvironment InternalInsert<TBlockToFind, TBlockToInsert>(InsertMode mode,  
+            Action<TBlockToInsert, ITestEnvironment> setup,
+            string markToFind = null,
+            string markToInsert = null)
+
+            where TBlockToFind : IBlock
+        {
+            ThrowIfAlreadyBuildException();
+
+            Find<TBlockToFind>(markToFind, true, out var indexOf);
+
+            var registration = new BlockRegistration<TBlockToInsert>(markToInsert, setup);
+
+            ThrowIfAlreadyExists(registration);
+
+            switch (mode)
+            {
+                case InsertMode.After:
+                    registrations.Insert(indexOf + 1, registration);
+                    break;
+                case InsertMode.Before:
+                    registrations.Insert(indexOf, registration);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
+
+            return this;
+        }
+
+        public ITestEnvironment Insert<TBlockToFind, TBlockToInsert>(InsertMode mode,  
+            Action<TBlockToInsert, ITestEnvironment> setup,
+            string markToFind = null,
+            string markToInsert = null)
+
+            where TBlockToFind : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+            return InternalInsert<TBlockToFind, TBlockToInsert>(mode, setup, markToFind, markToInsert);
+        }
+
+        public ITestEnvironment Insert<TBlockToFind, TBlockToInsert>(InsertMode mode, 
+            Action<TBlockToInsert> setup,
+            string markToFind = null, 
+            string markToInsert = null)
+
+            where TBlockToFind : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+            
+            var wrappedSetup = new Action<TBlockToInsert, ITestEnvironment>((block, environment) => { setup.Invoke(block); });
+
+            return InternalInsert<TBlockToFind, TBlockToInsert>(mode, wrappedSetup, markToFind, markToInsert);
+        }
+
+        public ITestEnvironment Insert<TBlockToFind, TBlockToInsert>(InsertMode mode,
+            string markToFind = null,
+            string markToInsert = null)
+
+            where TBlockToFind : IBlock
+        {
+            return InternalInsert<TBlockToFind, TBlockToInsert>(mode, null, markToFind, markToInsert);
+        }
+
+
+        internal ITestEnvironment UpdateInternal<TBlock>(string mark, Action<TBlock, ITestEnvironment> setup)
+            where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            ThrowIfAlreadyBuildException();
+
             var found = Find<TBlock>(mark, true, out var __);
             
-            var oldUpdater = new PreviousBlockSetupDelegate<TBlock>(block => { found.Setup?.Invoke(block, this); });
-
-            var updateNew = new Action<TBlock, ITestEnvironment>((block, builder) =>
+            var oldUpdater = new PreviousBlockSetupDelegate<TBlock>(block =>
             {
-                setup(block, builder, oldUpdater);
+                found.Setup?.Invoke(block, this);
+            });
+
+            var updateNew = new Action<TBlock, ITestEnvironment>((block, testEnvironment) =>
+            {
+                oldUpdater(block);
+
+                setup(block, testEnvironment);
             });
 
             registrations[registrations.IndexOf(found)] = new BlockRegistration<TBlock>(mark, updateNew);
 
             return this;
         }
+
+        public ITestEnvironment Update<TBlock>(string mark, Action<TBlock, ITestEnvironment> setup)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            return UpdateInternal(mark, setup);
+        }
+
+        public ITestEnvironment Update<TBlock>(Action<TBlock, ITestEnvironment> setup)
+            where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+            return UpdateInternal(null, setup);
+        }
+
+        public ITestEnvironment Update<TBlock>(string mark, Action<TBlock> setup)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return UpdateInternal(mark, wrappedSetup);
+
+        }
+
+        public ITestEnvironment Update<TBlock>(Action<TBlock> setup)
+            where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return UpdateInternal(null, wrappedSetup);
+
+        }
+
+
+        internal ITestEnvironment ReplaceInternal<TBlock>(Action<TBlock, ITestEnvironment> setup, 
+            string markToFind, string markToAdd)
+            where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            ThrowIfAlreadyBuildException();
+
+            RemoveInternal<TBlock>(markToFind);
+            return AddInternal(markToAdd, setup);
+        }
+
+        public ITestEnvironment Replace<TBlock>(Action<TBlock, ITestEnvironment> setup, 
+            string markToFind = null, 
+            string markToAdd = null) where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            return ReplaceInternal(setup, markToFind, markToAdd);
+        }
+
+        public ITestEnvironment Replace<TBlock>(Action<TBlock> setup,
+            string markToFind = null, 
+            string markToAdd = null) where TBlock : IBlock
+        {
+            if (setup == null) throw new ArgumentNullException(nameof(setup));
+
+            var wrappedSetup = new Action<TBlock, ITestEnvironment>((block, environment) => { setup(block); });
+
+            return ReplaceInternal(wrappedSetup, markToFind, markToAdd);
+        }
+
 
 
         public int IndexOf<TBlock>()
@@ -321,10 +561,9 @@ namespace Modulos.Testing
         {
             ThrowIfAlreadyBuildException();
 
+            var toRemove = registrations.Where(e => e.BlockType == typeof(TBlock));
 
-            var toRemove = registrations.Where(e => e.BlockType == typeof(TBlock) && e.Mark == mark);
-
-            foreach (var block in toRemove)
+            foreach (var block in toRemove.ToArray())
             {
                 registrations.Remove(block);
             }
@@ -332,14 +571,7 @@ namespace Modulos.Testing
             return this;
         }
 
-
-        public ITestEnvironment Remove<TBlock>()
-            where TBlock : IBlock
-        {
-            return Remove<TBlock>(null);
-        }
-
-        public ITestEnvironment Remove<TBlock>(string mark)
+        public ITestEnvironment RemoveInternal<TBlock>(string mark)
             where TBlock : IBlock
         {
             ThrowIfAlreadyBuildException();
@@ -349,40 +581,22 @@ namespace Modulos.Testing
             return this;
         }
 
-
-        public ITestEnvironment Insert<TBlockToFind, TBlockInsert>(InsertType insertType, 
-            string markToFind = null, 
-            string markToInsert = null, 
-            Action<TBlockInsert, ITestEnvironment> setup = null)
-
-            where TBlockToFind : IBlock
+        public ITestEnvironment Remove<TBlock>()
+            where TBlock : IBlock
         {
-            ThrowIfAlreadyBuildException();
-
-
-            Find<TBlockToFind>(markToFind, true, out var indexOf);
-
-            var registration = new BlockRegistration<TBlockInsert>(markToInsert, setup);
- 
-            ThrowIfAlreadyExists(registration);
-
-            switch (insertType)
-            {
-                case InsertType.After:
-                    registrations.Insert(indexOf + 1, registration);
-                    break;
-                case InsertType.Before:
-                    if (indexOf == 0)
-                        indexOf = 1;
-                    registrations.Insert(indexOf, registration);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(insertType), insertType, null);
-            }
-
-            return this;
+            return RemoveInternal<TBlock>(null);
         }
 
+        public ITestEnvironment Remove<TBlock>(string mark)
+            where TBlock : IBlock
+        {
+            if (mark == null) throw new ArgumentNullException(nameof(mark));
+
+            return RemoveInternal<TBlock>(mark);
+        }
+
+
+       
           
         private IBlock ResolveBlock(Type typeToResolve, params object[] availableData)
         {
@@ -514,17 +728,16 @@ namespace Modulos.Testing
             return (BlockRegistration<TBlock>)registrations[indexOf];
         }
 
-
-        public enum InsertType
-        {
-            After, Before
-        }
-
-        private interface IBlockRegistration
+        internal interface IBlockRegistration
         {
             Type BlockType { get; }
             string Mark { get; }
         }
 
+    }
+
+    public enum InsertMode
+    {
+        After, Before
     }
 }
