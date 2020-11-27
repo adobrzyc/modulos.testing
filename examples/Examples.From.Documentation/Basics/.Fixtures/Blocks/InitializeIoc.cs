@@ -1,41 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Modulos.Testing;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace SimpleDomain.Tests.Blocks
+namespace Examples.From.Documentation.Basics.Blocks
 {
     public sealed class InitializeIoc : IBlock, IServiceCollection
     {
         private readonly IServiceCollection internalCollection;
-        public readonly ContainerBuilder Autofac;
 
         public InitializeIoc()
         {
             internalCollection = new ServiceCollection();
-            Autofac = new ContainerBuilder();
         }
-
 
         Task<BlockExecutionResult> IBlock.Execute(ITestEnvironment testEnv)
         {
-            var sc = new ServiceCollection();
+            var collection = new ServiceCollection();
+
             foreach (var serviceDescriptor in internalCollection)
             {
-                sc.Add(serviceDescriptor);
+                collection.Add(serviceDescriptor);
             }
 
-            Autofac.Populate(sc);
-          
-            var sp = new AutofacServiceProvider(Autofac.Build());
+            var provider = collection.BuildServiceProvider();
 
-            testEnv.SetServiceProvider(sp);
+            testEnv.SetServiceProvider(provider);
 
             return Task.FromResult(BlockExecutionResult.EmptyContinue);
         }
@@ -45,7 +39,6 @@ namespace SimpleDomain.Tests.Blocks
             ((IServiceCollection)this).Clear();
             return Task.CompletedTask;
         }
-
 
         #region IServiceCollection
 

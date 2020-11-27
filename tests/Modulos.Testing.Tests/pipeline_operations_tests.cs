@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Modulos.Testing.Tests
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public class pipeline_operations_tests
     {
         [Fact]
-        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
         public Task add_new_block()
         {
             var hostBuilder = new TestEnvironment()
@@ -28,7 +26,6 @@ namespace Modulos.Testing.Tests
         }
 
         [Fact]
-        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
         public async Task break_pipeline()
         {
             var output = new List<string>();
@@ -57,7 +54,6 @@ namespace Modulos.Testing.Tests
         }
 
         [Fact]
-        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
         public async Task insert_into_pipeline()
         {
             var output = new List<string>();
@@ -79,7 +75,7 @@ namespace Modulos.Testing.Tests
                     };
                 });
 
-            env.Insert<ExecuteLogic, BreakBlock>(TestEnvironment.InsertType.Before, mark);
+            env.Insert<ExecuteLogic, BreakBlock>(InsertMode.Before, markToFind: mark);
 
             await env.Build();
             await env.CreateTest();
@@ -89,7 +85,6 @@ namespace Modulos.Testing.Tests
         }
 
         [Fact]
-        [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
         public async Task update_pipeline()
         {
             var output = new List<string>();
@@ -112,7 +107,7 @@ namespace Modulos.Testing.Tests
                 });
 
 
-            env.Update<ExecuteLogic>(mark, (block, builder, oldSetup) =>
+            env.Update<ExecuteLogic>(mark, (block, builder) =>
             {
                 block.Logic = () =>
                 {

@@ -21,19 +21,27 @@ namespace SimpleDomain.Tests
     {
         public SqLiteEnv()
         {
-            Add<InitializeIoc>((block, env) =>
+            Add<InitializeIoc>(block =>
             {
-                block.RegisterServices = (services, autofac)=>
+                block.Autofac.RegisterModule<RegisterDependencies>();
+                block.AddScoped<ISeedProvider, SeedProviderForEf<Context>>();
+                block.AddDbContext<Context>(options =>
                 {
-                    autofac.RegisterModule<RegisterDependencies>();
+                    options.UseSqlite($"Data Source={GetDbName()}.db");
+                });
 
-                    services.AddScoped<ISeedProvider, SeedProviderForEf<Context>>();
+                //todo: cleanup
+                //block.RegisterServices = (services, autofac)=>
+                //{
+                //    autofac.RegisterModule<RegisterDependencies>();
 
-                    services.AddDbContext<Context>(options =>
-                    {
-                        options.UseSqlite($"Data Source={GetDbName()}.db");
-                    });
-                };
+                //    services.AddScoped<ISeedProvider, SeedProviderForEf<Context>>();
+
+                //    services.AddDbContext<Context>(options =>
+                //    {
+                //        options.UseSqlite($"Data Source={GetDbName()}.db");
+                //    });
+                //};
             });
 
             Add<DropAndCreateDb<Context, TModel>>((block, evn) =>
