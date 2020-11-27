@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Modulos.Testing
 {
     public class BlockExecutionResult
@@ -9,6 +11,16 @@ namespace Modulos.Testing
 
         public ActionAfterBlock Action { get; }
         public IEnumerable<object> PublishedData { get; }
+
+        public static BlockExecutionResult NewContinue(params object[] data)
+        {
+            return new BlockExecutionResult(ActionAfterBlock.Continue, data);
+        }
+
+        public static BlockExecutionResult NewBreak(params object[] data)
+        {
+            return new BlockExecutionResult(ActionAfterBlock.Break, data);
+        }
 
         public BlockExecutionResult(ActionAfterBlock action, params object[] data)
         {
