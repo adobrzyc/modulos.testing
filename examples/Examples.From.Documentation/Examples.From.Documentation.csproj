@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Basics\.Fixtures\Blocks\InitializeIoc.cs" />
+    <Compile Include="Basics\.Fixtures\Domain\GetUserById.cs" />
+    <Compile Include="Basics\.Fixtures\Domain\IGetUserById.cs" />
+    <Compile Include="Basics\.Fixtures\Domain\IUserRepository.cs" />
+    <Compile Include="Basics\.Fixtures\Domain\MockedUserRepository.cs" />
+    <Compile Include="Basics\.Fixtures\Domain\User.cs" />
+    <Compile Include="Basics\.Fixtures\Environments\CustomEnvironmentCollection.cs" />
+    <Compile Include="Basics\.Fixtures\Environments\CustomEnvironment.cs" />
+    <Compile Include="Basics\.Fixtures\Environments\DefaultEnvironment.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="1.3.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Modulos.Testing.EF\Modulos.Testing.EF.csproj" />
+  </ItemGroup>
+
+</Project>

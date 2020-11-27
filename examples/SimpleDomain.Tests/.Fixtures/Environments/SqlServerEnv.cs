@@ -21,21 +21,33 @@ namespace SimpleDomain.Tests
     {
         public SqlServerEnv()
         {
-            Add<InitializeIoc>((block, builder) =>
+            Add<InitializeIoc>(block =>
             {
-                block.RegisterServices = (services, autofac)=>
+                block.Autofac.RegisterModule<RegisterDependencies>();
+
+                block.AddScoped<ISeedProvider, SeedProviderForEf<Context>>();
+
+                block.AddDbContext<Context>(options =>
                 {
-                    autofac.RegisterModule<RegisterDependencies>();
+                    options.UseSqlServer("Server=localhost;" +
+                                         "Integrated Security=true;" +
+                                         $"Initial Catalog={GetDbName()};");
+                });
 
-                    services.AddScoped<ISeedProvider, SeedProviderForEf<Context>>();
+                //todo: cleanup 
+                //block.RegisterServices = (services, autofac)=>
+                //{
+                //    autofac.RegisterModule<RegisterDependencies>();
 
-                    services.AddDbContext<Context>(options =>
-                    {
-                        options.UseSqlServer("Server=localhost;" +
-                                             "Integrated Security=true;" +
-                                             $"Initial Catalog={GetDbName()};");
-                    });
-                };
+                //    services.AddScoped<ISeedProvider, SeedProviderForEf<Context>>();
+
+                //    services.AddDbContext<Context>(options =>
+                //    {
+                //        options.UseSqlServer("Server=localhost;" +
+                //                             "Integrated Security=true;" +
+                //                             $"Initial Catalog={GetDbName()};");
+                //    });
+                //};
             });
 
             Add<DropAndCreateDb<Context, TModel>>((block, builder) =>
