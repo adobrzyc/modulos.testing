@@ -11,20 +11,20 @@ namespace Modulos.Testing
 {
     public class Test : ITest
     {
-        private readonly TestOptions options;
-        private readonly IServiceScope scope;
-        private readonly ConcurrentQueue<ITestWrapper> wrappers = new ConcurrentQueue<ITestWrapper>();
+        private readonly TestOptions _options;
+        private readonly IServiceScope _scope;
+        private readonly ConcurrentQueue<ITestWrapper> _wrappers = new ConcurrentQueue<ITestWrapper>();
 
         public Test(IServiceProvider serviceProvider, TestOptions options)
         {
-            this.options = options;
+            _options = options;
 
-            scope = options.CreateScope != null 
+            _scope = options.CreateScope != null 
                 ? options.CreateScope(serviceProvider) 
                 : serviceProvider.CreateScope();
         }
 
-        public IServiceProvider ServiceProvider => scope.ServiceProvider;
+        public IServiceProvider ServiceProvider => _scope.ServiceProvider;
 
         public object GetService(Type serviceType)
         {
@@ -33,10 +33,10 @@ namespace Modulos.Testing
 
         async Task ITest.BeginWrappers()
         {
-            foreach (var wrapperType in options.GetWrappers())
+            foreach (var wrapperType in _options.GetWrappers())
             {
                 var wrapper = ResolveWrapper(wrapperType);
-                wrappers.Enqueue(wrapper);
+                _wrappers.Enqueue(wrapper);
                 await wrapper.Begin();
             }
         }
@@ -45,9 +45,9 @@ namespace Modulos.Testing
         {
             var exceptions = new List<Exception>();
           
-            while (wrappers.Count > 0)
+            while (_wrappers.Count > 0)
             {
-                wrappers.TryDequeue(out var wrapper);
+                _wrappers.TryDequeue(out var wrapper);
                 try
                 {
                     await wrapper.Finish();
@@ -80,7 +80,7 @@ namespace Modulos.Testing
         {
             if (disposing)
             {
-                scope?.Dispose();
+                _scope?.Dispose();
                 ((ITest)this).FinishWrappers().Wait();
             }
         }
@@ -89,13 +89,13 @@ namespace Modulos.Testing
         {
             await ((ITest)this).FinishWrappers().ConfigureAwait(false);
 
-            if (scope is IAsyncDisposable disposable)
+            if (_scope is IAsyncDisposable disposable)
             {
                 await disposable.DisposeAsync().ConfigureAwait(false);
             }
             else
             {
-                scope.Dispose();
+                _scope.Dispose();
             }
         }
       
@@ -115,7 +115,7 @@ namespace Modulos.Testing
                     continue;
                 }
                 
-                var value = scope.ServiceProvider.GetRequiredService(param.ParameterType);
+                var value = _scope.ServiceProvider.GetRequiredService(param.ParameterType);
 
                 parameters.Add(value);
             }

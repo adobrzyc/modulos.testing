@@ -4,16 +4,16 @@ namespace Modulos.Testing
 {
     public sealed class DisposableAction : IDisposable
     {
-        private readonly Action action;
+        private readonly Action _action;
 
         public DisposableAction(Action action)
         {
-            this.action = action;
+            _action = action;
         }
 
         public void Dispose()
         {
-            action();
+            _action();
         }
     }
 }

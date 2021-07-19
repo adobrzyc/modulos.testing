@@ -10,7 +10,7 @@ namespace Modulos.Testing
 {
     public class TestOptions
     {
-        private readonly ConcurrentQueue<Type> wrappers = new ConcurrentQueue<Type>();
+        private readonly ConcurrentBag<Type> _wrappers = new ConcurrentBag<Type>();
         
         /// <summary>
         /// Allows to overwrite scope creation. It may be useful in some situations like
@@ -30,13 +30,30 @@ namespace Modulos.Testing
             if (!typeof(ITestWrapper).IsAssignableFrom(wrapper))
                 throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
 
-            wrappers.Enqueue(wrapper);
+            _wrappers.Add(wrapper);
             return this;
+        }
+
+        public TestOptions Unwrap(Type wrapper)
+        {
+            if (wrapper == null) throw new ArgumentNullException(nameof(wrapper));
+
+            if (!typeof(ITestWrapper).IsAssignableFrom(wrapper))
+                throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
+
+            _wrappers.TryTake(out wrapper);
+            
+            return this;
+        }
+
+        public TestOptions Unwrap<T>()
+        {
+            return Unwrap(typeof(T));
         }
 
         public IEnumerable<Type> GetWrappers()
         {
-            return wrappers;
+            return _wrappers;
         }
     }
 }

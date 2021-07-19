@@ -35,7 +35,7 @@ namespace Modulos.Testing
             lock (locker)
             {
                 if (isBuilt) 
-                    throw new ApplicationException("Test builder is already built.");
+                    throw new ApplicationException("Test builder is already bumped.");
                 isBuilt = true;
             }
 
@@ -53,8 +53,8 @@ namespace Modulos.Testing
                     }
                     catch (RuntimeBinderException e)
                     {
-                        throw new AggregateException($"Specified block: {registration.BlockType} is probably defined " +
-                                                     "in inaccessible scope e.q.: private. Blocks should be defined as a public classes.",
+                        throw new AggregateException($"Specified block: {registration.BlockType} is probably not defined " +
+                                                     "in accessible scope e.q.: private. Blocks should be defined as a public classes.",
                             e);
                     }
 
