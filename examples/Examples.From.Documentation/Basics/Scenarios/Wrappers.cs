@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Modulos.Testing;
-
-namespace Examples.From.Documentation.Basics.Scenarios
+﻿namespace Examples.From.Documentation.Basics.Scenarios
 {
+    using System.Threading.Tasks;
+    using Modulos.Testing;
+
     public class Wrappers
     {
         public async Task WrapTest()
@@ -10,11 +10,7 @@ namespace Examples.From.Documentation.Basics.Scenarios
             new TestEnvironment().Wrap<TestWrapper>();
 
             await using var test = await new TestEnvironment()
-                .CreateTest(options =>
-                {
-                    options.Wrap<TestWrapper>();
-                });
-
+                .CreateTest(options => { options.Wrap<TestWrapper>(); });
         }
 
         private class TestWrapper : ITestWrapper

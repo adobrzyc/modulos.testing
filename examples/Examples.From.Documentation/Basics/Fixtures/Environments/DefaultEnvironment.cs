@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-using Examples.From.Documentation.Basics.Blocks;
-using Modulos.Testing;
-using Xunit;
-
-// ReSharper disable MemberCanBeProtected.Global
+﻿// ReSharper disable MemberCanBeProtected.Global
 
 namespace Examples.From.Documentation.Basics.Environments
 {
+    using System.Threading.Tasks;
+    using Blocks;
+    using Modulos.Testing;
+    using Xunit;
+
     public class DefaultEnvironment : TestEnvironment, IAsyncLifetime
     {
         public DefaultEnvironment()

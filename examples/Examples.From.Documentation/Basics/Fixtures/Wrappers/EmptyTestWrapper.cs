@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Modulos.Testing;
-
-// ReSharper disable UnusedType.Global
+﻿// ReSharper disable UnusedType.Global
 
 namespace Examples.From.Documentation.Basics.Wrappers
 {
+    using System.Threading.Tasks;
+    using Modulos.Testing;
+
     public class EmptyTestWrapper : ITestWrapper
     {
         public Task Begin()

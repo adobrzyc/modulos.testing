@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-// ReSharper disable ClassNeverInstantiated.Global
+﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace Modulos.Testing
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class Test : ITest
     {
-        private readonly TestOptions _options;
-        private readonly IServiceScope _scope;
-        private readonly ConcurrentQueue<ITestWrapper> _wrappers = new ConcurrentQueue<ITestWrapper>();
+        private readonly ITestOptions options;
+        private readonly IServiceScope scope;
+        private readonly ConcurrentQueue<ITestWrapper> wrappers = new();
 
-        public Test(IServiceProvider serviceProvider, TestOptions options)
+        public Test(IServiceProvider serviceProvider, ITestOptions options)
         {
-            _options = options;
+            this.options = options;
 
-            _scope = options.CreateScope != null 
-                ? options.CreateScope(serviceProvider) 
-                : serviceProvider.CreateScope();
+            scope = serviceProvider.CreateScope();
         }
 
-        public IServiceProvider ServiceProvider => _scope.ServiceProvider;
+        public IServiceProvider ServiceProvider => scope.ServiceProvider;
 
         public object GetService(Type serviceType)
         {
@@ -33,10 +32,10 @@ namespace Modulos.Testing
 
         async Task ITest.BeginWrappers()
         {
-            foreach (var wrapperType in _options.GetWrappers())
+            foreach (var wrapperType in options.GetWrappers())
             {
                 var wrapper = ResolveWrapper(wrapperType);
-                _wrappers.Enqueue(wrapper);
+                wrappers.Enqueue(wrapper);
                 await wrapper.Begin();
             }
         }
@@ -44,10 +43,10 @@ namespace Modulos.Testing
         async Task ITest.FinishWrappers()
         {
             var exceptions = new List<Exception>();
-          
-            while (_wrappers.Count > 0)
+
+            while (wrappers.Count > 0)
             {
-                _wrappers.TryDequeue(out var wrapper);
+                wrappers.TryDequeue(out var wrapper);
                 try
                 {
                     await wrapper.Finish();
@@ -57,11 +56,8 @@ namespace Modulos.Testing
                     exceptions.Add(e);
                 }
             }
-            
-            if (exceptions.Any())
-            {
-                throw new AggregateException("Error(s) during finishing test wrappers." ,exceptions);
-            }
+
+            if (exceptions.Any()) throw new AggregateException("Error(s) during finishing test wrappers.", exceptions);
         }
 
         public void Dispose()
@@ -73,14 +69,14 @@ namespace Modulos.Testing
         public async ValueTask DisposeAsync()
         {
             await DisposeAsyncCore();
-            Dispose(disposing: false);
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _scope?.Dispose();
+                scope?.Dispose();
                 ((ITest)this).FinishWrappers().Wait();
             }
         }
@@ -89,16 +85,12 @@ namespace Modulos.Testing
         {
             await ((ITest)this).FinishWrappers().ConfigureAwait(false);
 
-            if (_scope is IAsyncDisposable disposable)
-            {
+            if (scope is IAsyncDisposable disposable)
                 await disposable.DisposeAsync().ConfigureAwait(false);
-            }
             else
-            {
-                _scope.Dispose();
-            }
+                scope.Dispose();
         }
-      
+
         private ITestWrapper ResolveWrapper(Type typeToResolve)
         {
             var ctor = typeToResolve.GetConstructors().Select(e => (ctor: e, count: e.GetParameters().Length))
@@ -114,8 +106,8 @@ namespace Modulos.Testing
                     parameters.Add(this);
                     continue;
                 }
-                
-                var value = _scope.ServiceProvider.GetRequiredService(param.ParameterType);
+
+                var value = scope.ServiceProvider.GetRequiredService(param.ParameterType);
 
                 parameters.Add(value);
             }

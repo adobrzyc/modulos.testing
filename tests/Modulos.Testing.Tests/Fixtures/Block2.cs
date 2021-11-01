@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
-
-// ReSharper disable ClassNeverInstantiated.Global
-
 namespace Modulos.Testing.Tests
 {
-    public class Block : IBlock
+    using System.Threading.Tasks;
+
+    public class Block2 : IBlock
     {
         public string Property { get; set; }
 

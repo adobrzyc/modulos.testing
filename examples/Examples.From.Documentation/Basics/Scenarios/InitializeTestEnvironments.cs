@@ -1,21 +1,21 @@
-using System.Threading.Tasks;
-using Examples.From.Documentation.Basics.Blocks;
-using Examples.From.Documentation.Basics.Domain;
-using Examples.From.Documentation.Basics.Environments;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Modulos.Testing;
-using Xunit;
-
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Examples.From.Documentation.Basics.Scenarios
 {
+    using System.Threading.Tasks;
+    using Blocks;
+    using Domain;
+    using Environments;
+    using FluentAssertions;
+    using Microsoft.Extensions.DependencyInjection;
+    using Modulos.Testing;
+    using Xunit;
+
     /// <summary>
     /// This scenario shows different ways to create a test
-    /// environment and control its lifetime. 
+    /// environment and control its lifetime.
     /// </summary>
     public class InitializeTestEnvironments
     {
@@ -31,13 +31,13 @@ namespace Examples.From.Documentation.Basics.Scenarios
         /// <summary>
         /// Creating a brand new environment for each test method is very flexible,
         /// mainly to the possibility of reconfiguring blocks. For example it's possible
-        /// to replace available registrations. 
+        /// to replace available registrations.
         /// </summary>
         public class Inline
         {
             [Fact]
             public async Task Test()
-            { 
+            {
                 await using var env = new TestEnvironment();
                 env.Add<InitializeIoc>(block =>
                 {
@@ -101,4 +101,3 @@ namespace Examples.From.Documentation.Basics.Scenarios
         }
     }
 }
-

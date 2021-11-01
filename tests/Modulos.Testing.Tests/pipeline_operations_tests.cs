@@ -1,27 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Xunit;
+
     public class pipeline_operations_tests
     {
         [Fact]
         public Task add_new_block()
         {
             var hostBuilder = new TestEnvironment()
-                .Add<ExecuteLogic>((block, builder) =>
-                {
-                });
+                .Add<ExecuteLogic>((block, builder) => { });
 
             hostBuilder.IndexOf<ExecuteLogic>().Should().Be(0);
-            
+
             return Task.CompletedTask;
         }
 
@@ -30,21 +28,9 @@ namespace Modulos.Testing.Tests
         {
             var output = new List<string>();
             var env = new TestEnvironment();
-            env.Add<ExecuteLogic>((block, builder) =>
-                {
-                    block.Logic = () =>
-                    {
-                        output.Add("1 message");
-                    };
-                })
+            env.Add<ExecuteLogic>((block, builder) => { block.Logic = () => { output.Add("1 message"); }; })
                 .Add<BreakBlock>()
-                .Add<ExecuteLogic>(Guid.NewGuid().ToString(), (block, builder) =>
-                {
-                    block.Logic = () =>
-                    {
-                        output.Add("2 message");
-                    };
-                });
+                .Add<ExecuteLogic>(Guid.NewGuid().ToString(), (block, builder) => { block.Logic = () => { output.Add("2 message"); }; });
 
             await env.Build();
             await env.CreateTest();
@@ -60,22 +46,10 @@ namespace Modulos.Testing.Tests
             var mark = Guid.NewGuid().ToString();
 
             var env = new TestEnvironment();
-            env.Add<ExecuteLogic>((block, builder) =>
-                {
-                    block.Logic = () =>
-                    {
-                        output.Add("1 message");
-                    };
-                })
-                .Add<ExecuteLogic>(mark, (block, builder) =>
-                {
-                    block.Logic = () =>
-                    {
-                        output.Add("2 message");
-                    };
-                });
+            env.Add<ExecuteLogic>((block, builder) => { block.Logic = () => { output.Add("1 message"); }; })
+                .Add<ExecuteLogic>(mark, (block, builder) => { block.Logic = () => { output.Add("2 message"); }; });
 
-            env.Insert<ExecuteLogic, BreakBlock>(InsertMode.Before, markToFind: mark);
+            env.Insert<ExecuteLogic, BreakBlock>(InsertMode.Before, mark);
 
             await env.Build();
             await env.CreateTest();
@@ -91,29 +65,11 @@ namespace Modulos.Testing.Tests
             var mark = Guid.NewGuid().ToString();
 
             var env = new TestEnvironment();
-            env.Add<ExecuteLogic>((block, builder) =>
-                {
-                    block.Logic = () =>
-                    {
-                        output.Add("1 message");
-                    };
-                })
-                .Add<ExecuteLogic>(mark, (block, builder) =>
-                {
-                    block.Logic = () =>
-                    {
-                        output.Add("2 message");
-                    };
-                });
+            env.Add<ExecuteLogic>((block, builder) => { block.Logic = () => { output.Add("1 message"); }; })
+                .Add<ExecuteLogic>(mark, (block, builder) => { block.Logic = () => { output.Add("2 message"); }; });
 
 
-            env.Update<ExecuteLogic>(mark, (block, builder) =>
-            {
-                block.Logic = () =>
-                {
-                    output.Add("3 message");
-                };
-            });
+            env.Update<ExecuteLogic>(mark, (block, builder) => { block.Logic = () => { output.Add("3 message"); }; });
 
             await env.Build();
             await env.CreateTest();
@@ -140,7 +96,7 @@ namespace Modulos.Testing.Tests
         public class ExecuteLogic : IBlock
         {
             public Action Logic { get; set; }
-        
+
             Task<BlockExecutionResult> IBlock.Execute(ITestEnvironment testEnv)
             {
                 Logic();
@@ -152,6 +108,5 @@ namespace Modulos.Testing.Tests
                 return Task.CompletedTask;
             }
         }
-
     }
 }

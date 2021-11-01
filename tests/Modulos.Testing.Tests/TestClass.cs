@@ -1,9 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 // ReSharper disable MemberCanBePrivate.Local
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -11,6 +5,13 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Microsoft.Extensions.DependencyInjection;
+    using Xunit;
+
     public class TestClass
     {
         [Fact]
@@ -20,24 +21,23 @@ namespace Modulos.Testing.Tests
             var test = new Test(sp, new TestOptions().Wrap<Wrapper>());
 
             Wrapper.Counter.Should().Be(0);
-            await ((ITest) test).BeginWrappers();
+            await ((ITest)test).BeginWrappers();
             Wrapper.Counter.Should().Be(1);
             await test.DisposeAsync();
             Wrapper.Counter.Should().Be(0);
 
-            await ((ITest) test).BeginWrappers();
+            await ((ITest)test).BeginWrappers();
             Wrapper.Counter.Should().Be(1);
             // ReSharper disable once MethodHasAsyncOverload
             test.Dispose();
             Wrapper.Counter.Should().Be(0);
 
 
-            await ((ITest) test).BeginWrappers();
+            await ((ITest)test).BeginWrappers();
             Wrapper.Counter.Should().Be(1);
             // ReSharper disable once MethodHasAsyncOverload
-            await ((ITest) test).FinishWrappers();
+            await ((ITest)test).FinishWrappers();
             Wrapper.Counter.Should().Be(0);
-
         }
 
         [Fact]
@@ -68,8 +68,8 @@ namespace Modulos.Testing.Tests
 
             try
             {
-                await ((ITest) test).BeginWrappers();
-                await ((ITest) test).FinishWrappers();
+                await ((ITest)test).BeginWrappers();
+                await ((ITest)test).FinishWrappers();
             }
             catch
             {
@@ -77,12 +77,10 @@ namespace Modulos.Testing.Tests
             }
 
             throw new Exception("Missing exception.");
-           
         }
 
         private class Reference
         {
-
         }
 
         private class WrapperWithITest : ITestWrapper

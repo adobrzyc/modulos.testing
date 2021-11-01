@@ -1,14 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Modulos.Testing;
-
-// ReSharper disable ClassNeverInstantiated.Global
+﻿// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Examples.From.Documentation.Basics.Blocks
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Modulos.Testing;
+
     public sealed class InitializeIoc : IBlock, IServiceCollection
     {
         private readonly IServiceCollection internalCollection;
@@ -22,10 +22,7 @@ namespace Examples.From.Documentation.Basics.Blocks
         {
             var collection = new ServiceCollection();
 
-            foreach (var serviceDescriptor in internalCollection)
-            {
-                collection.Add(serviceDescriptor);
-            }
+            foreach (var serviceDescriptor in internalCollection) collection.Add(serviceDescriptor);
 
             var provider = collection.BuildServiceProvider();
 
@@ -49,7 +46,7 @@ namespace Examples.From.Documentation.Basics.Blocks
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) internalCollection).GetEnumerator();
+            return ((IEnumerable)internalCollection).GetEnumerator();
         }
 
         void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item)

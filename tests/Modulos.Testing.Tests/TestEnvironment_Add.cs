@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
@@ -11,6 +5,12 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Xunit;
+
     public class TestEnvironment_Add
     {
         [Fact]
@@ -19,12 +19,12 @@ namespace Modulos.Testing.Tests
             var env = new TestEnvironment();
 
             new Action(() => { env.Add<Block>(mark: null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Add((Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Add(null,(Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Add("mark",(Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Add((Action<Block>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Add(null,(Action<Block>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Add("mark",(Action<Block>) null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Add((Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Add(null, (Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Add("mark", (Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Add((Action<Block>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Add(null, (Action<Block>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Add("mark", (Action<Block>)null); }).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -77,7 +77,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -99,7 +99,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().BeNull();
         }
@@ -127,7 +127,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -154,7 +154,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -176,7 +176,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().BeNull();
         }
@@ -189,9 +189,7 @@ namespace Modulos.Testing.Tests
                 var env = new TestEnvironment();
                 env.Add<Block>();
                 env.Add<Block>();
-
             }).Should().Throw<ArgumentException>();
-
         }
     }
 }

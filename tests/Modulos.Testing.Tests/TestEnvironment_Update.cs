@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
@@ -11,19 +5,25 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Xunit;
+
     public class TestEnvironment_Update
     {
         [Fact]
         public void check_arguments()
         {
             var env = new TestEnvironment();
-            new Action(() => { env.UpdateInternal(mark: null,(Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Update(mark: null,(Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Update(mark: "mark",(Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Update((Action<Block, ITestEnvironment>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Update(mark: null,(Action<Block>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Update(mark: "mark",(Action<Block>) null); }).Should().Throw<ArgumentNullException>();
-            new Action(() => { env.Update((Action<Block>) null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.UpdateInternal(null, (Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Update(null, (Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Update("mark", (Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Update((Action<Block, ITestEnvironment>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Update(null, (Action<Block>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Update("mark", (Action<Block>)null); }).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Update((Action<Block>)null); }).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -72,7 +72,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -98,7 +98,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -123,7 +123,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -160,7 +160,7 @@ namespace Modulos.Testing.Tests
 
             await env.Build();
 
-            var inst = (Block) env.blocks.FirstOrDefault();
+            var inst = (Block)env.blocks.FirstOrDefault();
             inst.Should().NotBeNull();
             inst.Property.Should().Be("abc");
         }

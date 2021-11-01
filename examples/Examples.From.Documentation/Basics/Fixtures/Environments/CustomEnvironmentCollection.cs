@@ -1,10 +1,9 @@
-﻿using Xunit;
-
-namespace Examples.From.Documentation.Basics.Environments
+﻿namespace Examples.From.Documentation.Basics.Environments
 {
+    using Xunit;
+
     [CollectionDefinition(nameof(CustomEnvironment))]
     public class CustomEnvironmentCollection : ICollectionFixture<CustomEnvironment>
     {
-
     }
 }

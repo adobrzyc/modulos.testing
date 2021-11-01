@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.CSharp.RuntimeBinder;
-using Xunit;
-
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
@@ -14,6 +7,13 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Microsoft.CSharp.RuntimeBinder;
+    using Xunit;
+
     public class TestEnvironment_Build
     {
         [Fact]
@@ -40,7 +40,7 @@ namespace Modulos.Testing.Tests
             var env = new TestEnvironment();
             env.Add<BlockWithData>();
             await env.Build("hello");
-            var block = (BlockWithData) env.blocks.Single(e => e is BlockWithData);
+            var block = (BlockWithData)env.blocks.Single(e => e is BlockWithData);
             block.Data.Should().Be("hello");
         }
 
@@ -51,7 +51,7 @@ namespace Modulos.Testing.Tests
             env.Add<BlockWithData>();
             env.Add<BlockAccesToBlock>();
             await env.Build("hello");
-            var block = (BlockAccesToBlock) env.blocks.Single(e => e is BlockAccesToBlock);
+            var block = (BlockAccesToBlock)env.blocks.Single(e => e is BlockAccesToBlock);
             block.Block.Should().NotBeNull();
             block.Block.Data.Should().Be("hello");
         }
@@ -63,7 +63,7 @@ namespace Modulos.Testing.Tests
             env.Add<BlockProducesDateTime>();
             env.Add<BlockConsumeDateTime>();
             await env.Build();
-            var block = (BlockConsumeDateTime) env.blocks.Single(e => e is BlockConsumeDateTime);
+            var block = (BlockConsumeDateTime)env.blocks.Single(e => e is BlockConsumeDateTime);
             block.Time.Should().Be(DateTime.Today);
         }
 
@@ -96,12 +96,12 @@ namespace Modulos.Testing.Tests
 
         public class BlockConsumeDateTime : IBlock
         {
-            public DateTime Time { get; }
-
             public BlockConsumeDateTime(DateTime time)
             {
                 Time = time;
             }
+
+            public DateTime Time { get; }
 
             Task<BlockExecutionResult> IBlock.Execute(ITestEnvironment testEnv)
             {
@@ -117,12 +117,12 @@ namespace Modulos.Testing.Tests
 
         public class BlockAccesToBlock : IBlock
         {
-            public BlockWithData Block { get; }
-
             public BlockAccesToBlock(BlockWithData block)
             {
                 Block = block;
             }
+
+            public BlockWithData Block { get; }
 
             Task<BlockExecutionResult> IBlock.Execute(ITestEnvironment testEnv)
             {
@@ -137,12 +137,12 @@ namespace Modulos.Testing.Tests
 
         public class BlockWithData : IBlock
         {
-            public string Data { get; }
-
             public BlockWithData(string data)
             {
                 Data = data;
             }
+
+            public string Data { get; }
 
             Task<BlockExecutionResult> IBlock.Execute(ITestEnvironment testEnv)
             {
@@ -154,6 +154,5 @@ namespace Modulos.Testing.Tests
                 return Task.CompletedTask;
             }
         }
-
     }
 }

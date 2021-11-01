@@ -1,7 +1,3 @@
-using System.Linq;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
@@ -9,6 +5,10 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System.Linq;
+    using FluentAssertions;
+    using Xunit;
+
     public class TestEnvironment_RemoveAll
     {
         [Fact]

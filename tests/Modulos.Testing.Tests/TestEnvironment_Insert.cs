@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
@@ -11,6 +5,12 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Xunit;
+
     public class TestEnvironment_Insert
     {
         [Fact]
@@ -46,7 +46,7 @@ namespace Modulos.Testing.Tests
         {
             var env = new TestEnvironment();
             env.Add<Block>("mark");
-            env.Insert<Block, Block2>(InsertMode.Before, markToFind: "mark");
+            env.Insert<Block, Block2>(InsertMode.Before, "mark");
             env.IndexOf<Block2>().Should().Be(0);
         }
 
@@ -69,14 +69,14 @@ namespace Modulos.Testing.Tests
             env.Add<Block>();
             env.Insert<Block, Block2>(InsertMode.Before);
 
-            var reg = env.registrations.SingleOrDefault(e=>e.BlockType == typeof(Block2));
+            var reg = env.registrations.SingleOrDefault(e => e.BlockType == typeof(Block2));
             reg.Should().NotBeNull();
             reg.BlockType.Should().Be<Block2>();
             reg.Mark.Should().BeNull();
 
             await env.Build();
 
-            var inst = (Block2) env.blocks.SingleOrDefault(e=>e is Block2);
+            var inst = (Block2)env.blocks.SingleOrDefault(e => e is Block2);
             inst.Should().NotBeNull();
             inst.Property.Should().BeNull();
         }
@@ -93,14 +93,14 @@ namespace Modulos.Testing.Tests
                 block2.Property = "a";
             });
 
-            var reg = env.registrations.SingleOrDefault(e=>e.BlockType == typeof(Block2));
+            var reg = env.registrations.SingleOrDefault(e => e.BlockType == typeof(Block2));
             reg.Should().NotBeNull();
             reg.BlockType.Should().Be<Block2>();
             reg.Mark.Should().BeNull();
 
             await env.Build();
 
-            var inst = (Block2) env.blocks.SingleOrDefault(e=>e is Block2);
+            var inst = (Block2)env.blocks.SingleOrDefault(e => e is Block2);
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -118,19 +118,19 @@ namespace Modulos.Testing.Tests
                 block2.Property = "a";
             });
 
-            var reg = env.registrations.SingleOrDefault(e=>e.BlockType == typeof(Block2));
+            var reg = env.registrations.SingleOrDefault(e => e.BlockType == typeof(Block2));
             reg.Should().NotBeNull();
             reg.BlockType.Should().Be<Block2>();
             reg.Mark.Should().BeNull();
 
             await env.Build();
 
-            var inst = (Block2) env.blocks.SingleOrDefault(e=>e is Block2);
+            var inst = (Block2)env.blocks.SingleOrDefault(e => e is Block2);
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
 
-      
+
         [Fact]
         public async Task setup_marks_env()
         {
@@ -142,16 +142,16 @@ namespace Modulos.Testing.Tests
                 block2.Should().NotBeNull();
                 environment.Should().NotBeNull();
                 block2.Property = "a";
-            }, markToFind: "mark", markToInsert: "mark2");
+            }, "mark", "mark2");
 
-            var reg = env.registrations.SingleOrDefault(e=>e.BlockType == typeof(Block2));
+            var reg = env.registrations.SingleOrDefault(e => e.BlockType == typeof(Block2));
             reg.Should().NotBeNull();
             reg.BlockType.Should().Be<Block2>();
             reg.Mark.Should().Be("mark2");
 
             await env.Build();
 
-            var inst = (Block2) env.blocks.SingleOrDefault(e=>e is Block2);
+            var inst = (Block2)env.blocks.SingleOrDefault(e => e is Block2);
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }
@@ -161,21 +161,21 @@ namespace Modulos.Testing.Tests
         {
             var env = new TestEnvironment();
             env.Add<Block>("mark");
-            env.Insert<Block, Block2>(InsertMode.Before, (block2) =>
+            env.Insert<Block, Block2>(InsertMode.Before, block2 =>
             {
                 block2.Should().BeOfType<Block2>();
                 block2.Should().NotBeNull();
                 block2.Property = "a";
-            }, markToFind: "mark", markToInsert: "mark2");
+            }, "mark", "mark2");
 
-            var reg = env.registrations.SingleOrDefault(e=>e.BlockType == typeof(Block2));
+            var reg = env.registrations.SingleOrDefault(e => e.BlockType == typeof(Block2));
             reg.Should().NotBeNull();
             reg.BlockType.Should().Be<Block2>();
             reg.Mark.Should().Be("mark2");
 
             await env.Build();
 
-            var inst = (Block2) env.blocks.SingleOrDefault(e=>e is Block2);
+            var inst = (Block2)env.blocks.SingleOrDefault(e => e is Block2);
             inst.Should().NotBeNull();
             inst.Property.Should().Be("a");
         }

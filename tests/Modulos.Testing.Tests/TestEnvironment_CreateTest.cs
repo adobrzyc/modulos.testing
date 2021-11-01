@@ -1,9 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable InconsistentNaming
@@ -12,6 +6,12 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Xunit;
+
     public class TestEnvironment_CreateTest
     {
         [Fact]
@@ -37,7 +37,7 @@ namespace Modulos.Testing.Tests
             {
                 var env = new TestEnvironment();
                 await env.Build();
-                await env.CreateTest<ResolveNonRegisteredNonOptionalTest>();
+                await env.CreateTest<ResolveNonRegisteredNonOptionalTest, TestOptions>();
             }
             catch (ArgumentException)
             {
@@ -52,7 +52,7 @@ namespace Modulos.Testing.Tests
         {
             var env = new TestEnvironment();
             await env.Build();
-            await env.CreateTest<ResolveEnvironmentTest>();
+            await env.CreateTest<ResolveEnvironmentTest, TestOptions>();
         }
 
         [Fact]
@@ -60,32 +60,34 @@ namespace Modulos.Testing.Tests
         {
             var env = new TestEnvironment();
             await env.Build();
-            await env.CreateTest<ResolveOptionalTest>();
+            await env.CreateTest<ResolveOptionalTest, TestOptions>();
         }
 
         private class ResolveEnvironmentTest : Test
         {
-            public ResolveEnvironmentTest(IServiceProvider serviceProvider, TestOptions options, 
+            public ResolveEnvironmentTest(IServiceProvider serviceProvider, TestOptions options,
                 ITestEnvironment environment) : base(serviceProvider, options)
             {
                 environment.Should().NotBeNull();
             }
         }
 
-        private interface ISomeNonRegisteredData {}
+        private interface ISomeNonRegisteredData
+        {
+        }
 
         private class ResolveOptionalTest : Test
         {
-            public ResolveOptionalTest(IServiceProvider serviceProvider, TestOptions options, 
+            public ResolveOptionalTest(IServiceProvider serviceProvider, TestOptions options,
                 [Optional] ISomeNonRegisteredData data) : base(serviceProvider, options)
             {
                 data.Should().BeNull();
             }
         }
 
-        private class ResolveNonRegisteredNonOptionalTest: Test
+        private class ResolveNonRegisteredNonOptionalTest : Test
         {
-            public ResolveNonRegisteredNonOptionalTest(IServiceProvider serviceProvider, TestOptions options, 
+            public ResolveNonRegisteredNonOptionalTest(IServiceProvider serviceProvider, TestOptions options,
                 ISomeNonRegisteredData data) : base(serviceProvider, options)
             {
                 data.Should().BeNull();

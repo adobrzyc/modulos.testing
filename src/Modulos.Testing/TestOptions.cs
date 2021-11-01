@@ -1,59 +1,53 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
-
-// ReSharper disable UnassignedField.Global
+﻿// ReSharper disable UnassignedField.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Modulos.Testing
 {
-    public class TestOptions
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    
+    public class TestOptions : ITestOptions
     {
-        private readonly ConcurrentBag<Type> _wrappers = new ConcurrentBag<Type>();
+        private readonly ConcurrentBag<Type> wrappers = new();
         
-        /// <summary>
-        /// Allows to overwrite scope creation. It may be useful in some situations like
-        /// overwriting registrations in a child scope (if possible e.q.: autofac).
-        /// </summary>
-        public Func<IServiceProvider, IServiceScope> CreateScope;
-
-        public TestOptions Wrap<T>() where T : ITestWrapper
+        public ITestOptions Wrap<T>() where T : ITestWrapper
         {
             return Wrap(typeof(T));
         }
 
-        public TestOptions Wrap(Type wrapper)
+        public ITestOptions Wrap(Type wrapperType)
         {
-            if (wrapper == null) throw new ArgumentNullException(nameof(wrapper));
+            if (wrapperType == null) throw new ArgumentNullException(nameof(wrapperType));
 
-            if (!typeof(ITestWrapper).IsAssignableFrom(wrapper))
+            if (!typeof(ITestWrapper).IsAssignableFrom(wrapperType))
                 throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
 
-            _wrappers.Add(wrapper);
+            wrappers.Add(wrapperType);
             return this;
         }
 
-        public TestOptions Unwrap(Type wrapper)
+        public ITestOptions Unwrap(Type wrapperType)
         {
-            if (wrapper == null) throw new ArgumentNullException(nameof(wrapper));
+            if (wrapperType == null) throw new ArgumentNullException(nameof(wrapperType));
 
-            if (!typeof(ITestWrapper).IsAssignableFrom(wrapper))
+            if (!typeof(ITestWrapper).IsAssignableFrom(wrapperType))
                 throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
 
-            _wrappers.TryTake(out wrapper);
-            
+            wrappers.TryTake(out wrapperType);
+
             return this;
         }
 
-        public TestOptions Unwrap<T>()
+        public ITestOptions Unwrap<T>()
         {
             return Unwrap(typeof(T));
         }
 
         public IEnumerable<Type> GetWrappers()
         {
-            return _wrappers;
+            return wrappers;
         }
     }
 }

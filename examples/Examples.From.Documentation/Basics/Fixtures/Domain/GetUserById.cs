@@ -1,7 +1,7 @@
-﻿using System.Linq;
-
-namespace Examples.From.Documentation.Basics.Domain
+﻿namespace Examples.From.Documentation.Basics.Domain
 {
+    using System.Linq;
+
     public class GetUserById : IGetUserById
     {
         private readonly IUserRepository userRepository;

@@ -1,9 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
 // ReSharper disable UseAwaitUsing
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -14,6 +8,12 @@ using Xunit;
 
 namespace Modulos.Testing.Tests
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Xunit;
+
     public class TestEnvironment_Wrap
     {
         [Fact]
@@ -21,8 +21,8 @@ namespace Modulos.Testing.Tests
         {
             var env = new TestEnvironment();
 
-            new Action(() => { env.Wrap(typeof(object));}).Should().Throw<ArgumentException>();
-            new Action(() => { env.Wrap(null);}).Should().Throw<ArgumentNullException>();
+            new Action(() => { env.Wrap(typeof(object)); }).Should().Throw<ArgumentException>();
+            new Action(() => { env.Wrap(null); }).Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -47,12 +47,13 @@ namespace Modulos.Testing.Tests
             var env = new TestEnvironment();
             env.Wrap(typeof(Wrapper));
 
-            await env.Build(); 
+            await env.Build();
 
             using (await env.CreateTest())
             {
                 Wrapper.Counter.Should().Be(1);
             }
+
             Wrapper.Counter.Should().Be(0);
         }
 
