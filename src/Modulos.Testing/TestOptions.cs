@@ -7,11 +7,12 @@ namespace Modulos.Testing
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    
+    using System.Linq;
+
     public class TestOptions : ITestOptions
     {
         private readonly ConcurrentBag<Type> wrappers = new();
-        
+
         public ITestOptions Wrap<T>() where T : ITestWrapper
         {
             return Wrap(typeof(T));
@@ -24,7 +25,9 @@ namespace Modulos.Testing
             if (!typeof(ITestWrapper).IsAssignableFrom(wrapperType))
                 throw new ArgumentException($"Wrapper must inherit from {nameof(ITestWrapper)}");
 
-            wrappers.Add(wrapperType);
+            if (wrappers.All(e => e != wrapperType))
+                wrappers.Add(wrapperType);
+
             return this;
         }
 
