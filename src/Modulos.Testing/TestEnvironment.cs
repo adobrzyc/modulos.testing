@@ -142,6 +142,12 @@ namespace Modulos.Testing
                     parameters.Add(options);
                     continue;
                 }
+                
+                if (param.ParameterType == typeof(TOptions))
+                {
+                    parameters.Add(options);
+                    continue;
+                }
 
                 if ((param.Attributes & ParameterAttributes.Optional) != 0)
                     parameters.Add(sp.GetService(param.ParameterType));
