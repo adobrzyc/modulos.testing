@@ -10,37 +10,68 @@ namespace Modulos.Testing
     /// Defines the test environment.
     /// </summary>
     /// <remarsk>
-    /// Lifetime of this object should be managed by test framework like a xUnit, NUnit.
+    /// It's not a bad idea to manage the lifetime of this object by test framework like a xUnit, NUnit.
     /// </remarsk>
     public interface ITestEnvironment : IAsyncDisposable
     {
         /// <summary>
         /// Creates the test instance.
         /// </summary>
+        /// <param name="updateTest">Allows editing test instance.</param>
         /// <param name="updateOptions">Allows editing options.</param>
         /// <typeparam name="TTest">The test type.</typeparam>
         /// <typeparam name="TOptions">The options type.</typeparam>
         /// <returns>The instance of the built test.</returns>
-        Task<TTest> CreateTest<TTest, TOptions>(Action<TOptions> updateOptions = null)
+        Task<TTest> CreateTest<TTest, TOptions>(Action<TTest> updateTest, Action<TOptions> updateOptions)
             where TTest : ITest
             where TOptions : ITestOptions, new();
 
         /// <summary>
-        /// Creates the <see cref="Test" /> instance.
+        /// Creates the test instance.
+        /// </summary>
+        /// <returns>The instance of the built test.</returns>
+        Task<Test> CreateTest();
+
+        /// <summary>
+        /// Creates the test instance.
         /// </summary>
         /// <param name="updateOptions">Allows editing options.</param>
         /// <returns>The instance of the built test.</returns>
-        Task<Test> CreateTest(Action<TestOptions> updateOptions = null);
-       
+        Task<Test> CreateTest(Action<TestOptions> updateOptions);
+
+        /// <summary>
+        /// Creates the test instance.
+        /// </summary>
+        /// <param name="updateTest">Allows editing test instance.</param>
+        /// <returns>The instance of the built test.</returns>
+        Task<Test> CreateTest(Action<Test> updateTest);
+
+        /// <summary>
+        /// Creates the test instance.
+        /// </summary>
+        /// <typeparam name="TTest">The test type.</typeparam>
+        /// <returns>The instance of the built test.</returns>
+        Task<TTest> CreateTest<TTest>() where TTest : ITest;
+
+        /// <summary>
+        /// Creates the test instance.
+        /// </summary>
+        /// <param name="updateTest">Allows editing test instance.</param>
+        /// <typeparam name="TTest">The test type.</typeparam>
+        /// <returns>The instance of the built test.</returns>
+        public Task<TTest> CreateTest<TTest>(Action<TTest> updateTest)
+            where TTest : ITest;
+
         /// <summary>
         /// Creates the test instance.
         /// </summary>
         /// <param name="updateOptions">Allows editing options.</param>
         /// <typeparam name="TTest">The test type.</typeparam>
         /// <returns>The instance of the built test.</returns>
-        Task<TTest> CreateTest<TTest>(Action<TestOptions> updateOptions = null)
+        public Task<TTest> CreateTest<TTest>(Action<TestOptions> updateOptions)
             where TTest : ITest;
-        
+
+
         /// <summary>
         /// Builds the test environment based on previously defined blocks.
         /// </summary>
@@ -108,7 +139,7 @@ namespace Modulos.Testing
         /// <typeparam name="TBlock">The block type.</typeparam>
         /// <returns>The test environment instance.</returns>
         ITestEnvironment Add<TBlock>(Action<TBlock> setup) where TBlock : IBlock;
-     
+
         /// <summary>
         /// Adds block to the environment definition.
         /// </summary>
@@ -188,7 +219,7 @@ namespace Modulos.Testing
         /// <returns>The test environment instance.</returns>
         ITestEnvironment InsertAt<TBlock>(int index, string mark, Action<TBlock, ITestEnvironment> setup)
             where TBlock : IBlock;
-        
+
         /// <summary>
         /// Inserts block according to specified parameters.
         /// </summary>
@@ -198,7 +229,7 @@ namespace Modulos.Testing
         /// <returns>The test environment instance.</returns>
         ITestEnvironment InsertAt<TBlock>(int index, string mark, Action<TBlock> setup)
             where TBlock : IBlock;
-    
+
         /// <summary>
         /// Inserts block according to specified parameters.
         /// </summary>
@@ -304,7 +335,7 @@ namespace Modulos.Testing
         /// <typeparam name="TBlock">Type of block to find.</typeparam>
         /// <returns>The test environment instance.</returns>
         int IndexOf<TBlock>(string mark);
-        
+
         /// <summary>
         /// Returns index of the specified block.
         /// </summary>
@@ -329,7 +360,7 @@ namespace Modulos.Testing
         /// <returns>The test environment instance.</returns>
         ITestEnvironment Remove<TBlock>(string mark)
             where TBlock : IBlock;
-       
+
         /// <summary>
         /// Removes all block of specified type.
         /// </summary>
@@ -337,7 +368,5 @@ namespace Modulos.Testing
         /// <returns>The test environment instance.</returns>
         ITestEnvironment Remove<TBlock>()
             where TBlock : IBlock;
-
-
     }
 }

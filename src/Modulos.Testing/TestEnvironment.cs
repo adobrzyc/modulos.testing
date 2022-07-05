@@ -108,7 +108,7 @@ namespace Modulos.Testing
             }
         }
 
-        public virtual async Task<TTest> CreateTest<TTest, TOptions>(Action<TOptions> updateOptions = null)
+        public virtual async Task<TTest> CreateTest<TTest, TOptions>(Action<TTest> updateTest, Action<TOptions> updateOptions)
             where TTest : ITest
             where TOptions : ITestOptions, new()
         {
@@ -168,24 +168,52 @@ namespace Modulos.Testing
             }
 
             var test = (TTest)Activator.CreateInstance(typeof(TTest), parameters.ToArray());
-
+            updateTest?.Invoke(test);
             await test.BeginWrappers();
 
             return test;
         }
 
-     
-
-        public Task<Test> CreateTest(Action<TestOptions> updateOptions = null)
+        public Task<TTest> CreateTest<TTest, TOptions>()
+            where TTest : ITest
+            where TOptions : ITestOptions, new()
         {
-            return CreateTest<Test, TestOptions>(updateOptions);
+            return CreateTest<TTest, TOptions>(null, null);
+        }
+          
+        public Task<Test> CreateTest()
+        {
+            return CreateTest<Test, TestOptions>(null ,null);
+        }
+        
+        public Task<Test> CreateTest(Action<TestOptions> updateOptions)
+        {
+            return CreateTest<Test, TestOptions>(null ,null);
         }
 
-        public Task<TTest> CreateTest<TTest>(Action<TestOptions> updateOptions = null)
+        public Task<Test> CreateTest(Action<Test> updateTest)
+        {
+            return CreateTest<Test, TestOptions>(updateTest ,null);
+        }
+        
+        public Task<TTest> CreateTest<TTest>()
+        where TTest : ITest
+        {
+            return CreateTest<TTest, TestOptions>(null, null);
+        }
+        
+        public Task<TTest> CreateTest<TTest>(Action<TTest> updateTest)
+         where TTest : ITest
+        {
+            return CreateTest<TTest, TestOptions>(updateTest, null);
+        }
+        
+        public Task<TTest> CreateTest<TTest>(Action<TestOptions> updateOptions)
             where TTest : ITest
         {
-            return CreateTest<TTest, TestOptions>(updateOptions);
+            return CreateTest<TTest, TestOptions>(null, updateOptions);
         }
+        
         
         public void AddDisposableElement(IDisposable disposable)
         {
